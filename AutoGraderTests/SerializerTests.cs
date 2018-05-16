@@ -2,7 +2,7 @@
 
 namespace AutoGraderTests
 {
-    
+
     [TestClass]
     public class SerializerTests
     {
@@ -13,14 +13,17 @@ namespace AutoGraderTests
         public void SerializeToInvalidPath () { }
 
         [TestMethod]
-        public void DeserializeOutInvalidPath() { }
+        public void DeserializeOutInvalidPath () { }
 
         [TestMethod]
-        public void DeserializeOutBadFormat() { }
+        public void DeserializeOutBadFormat () { }
 
         [TestMethod]
         public void SerializeValid () { }
 
-        
+        [TestMethod]
+        public void ReadObjectFromPath () { }
+
+
     }
 }

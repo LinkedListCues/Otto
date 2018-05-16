@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -7,35 +8,33 @@ namespace AutoGrader
     public class Serializer : IManager
     {
         private const string BASE_PATH = "214AutoGrader";
-        private const string INFORMATION_PATH = "Info";
 
-        public void Initialize() {
-            CheckAndMakeDirectory(INFORMATION_PATH);
-        }
+        public void Initialize () { }
 
-        private static string GetPathName(string path) {
+        private static string GetPathName (string path) {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             return Path.Combine(datapath, BASE_PATH, path);
         }
 
-        private DirectoryInfo CheckAndMakeDirectory(string path) {
+        //
+        // public API
+
+        public static bool FileExists (string path) { return File.Exists(GetPathName(path)); }
+
+        public static void WriteObjectToPath (object payload, string path) {
+            string serialized = JsonConvert.SerializeObject(payload);
             string fullpath = GetPathName(path);
-            if (Directory.Exists(fullpath)) { return new DirectoryInfo(fullpath); }
-            Logger.Log("Creating directory at: " + fullpath);
-            return Directory.CreateDirectory(fullpath);
+            File.WriteAllText(fullpath, serialized);
+
         }
 
+        public static T ReadObjectFromPath<T> (string path) {
+            if (path == null) { throw new NoNullAllowedException("Passed in null for path."); }
+            if (!FileExists(path)) { throw new FileNotFoundException("Invalid path name: " + path); }
 
-        public static bool WriteObjectToPath(object paylod, string path) {
-            return false;
-        }
+            string fullpath = GetPathName(path);
+            string text = File.ReadAllText(fullpath);
 
-        public static T ReadObjectFromPath<T>(string path) {
-            if (path == null || !File.Exists(path)) {
-                throw new FileNotFoundException("No file at path: " + path);
-            }
-
-            string text = File.ReadAllText(path);
             var result = JsonConvert.DeserializeObject<T>(text);
             return result;
         }
