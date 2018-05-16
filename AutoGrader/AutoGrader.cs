@@ -9,6 +9,7 @@
 
         public void Initialize () {
             Fetcher = new CanvasFetcher();
+            Fetcher.Initialize();
             Serializer.InitializeDirectories();
 
             _roster = new Roster();

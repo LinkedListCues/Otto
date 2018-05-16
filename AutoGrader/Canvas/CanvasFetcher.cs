@@ -1,17 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
 namespace AutoGrader
 {
-    public class CanvasFetcher
+    public class CanvasFetcher : IManager
     {
         private const int PER_PAGE = 99;
-        private const string PER_PAGE_S = "99";
-
         private static readonly Uri BASE_URI = new Uri("https://canvas.northwestern.edu/api/v1/courses/72859/assignments/458956/submissions");
-        private const string ARGUMENTS =
-            "?access_token=1876~nSmP6pGTi0LsIdPe8h19TLVL9zAP5tHTgvfMd08cjLZAdarU0HF5KQSyss8JGcdp&per_page=" + PER_PAGE_S;
+        private static string ARGUMENTS;
+
+
+        public void Initialize () {
+            var secret = Serializer.GetAPIKey();
+            ARGUMENTS = $"?access_token={secret}&per_page={PER_PAGE}";
+        }
+
 
         // todo error catching
         private static JArray LoadJsonArrayFromURL (Uri uri) {
