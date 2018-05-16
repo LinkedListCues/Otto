@@ -5,11 +5,9 @@ using Newtonsoft.Json;
 
 namespace AutoGrader
 {
-    public class Serializer : IManager
+    public static class Serializer
     {
         private const string BASE_PATH = "214AutoGrader";
-
-        public void Initialize () { }
 
         private static string GetPathName (string path) {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
