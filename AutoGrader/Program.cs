@@ -2,15 +2,13 @@
 
 namespace AutoGrader
 {
-    internal class Program 
+    internal class Program
     {
-        private static void Main(string[] args)
-        {
-            AutoGrader grader = new AutoGrader();
+        private static void Main (string[] args) {
+            var grader = new AutoGrader();
             grader.Initialize();
 
-            Console.WriteLine("Hello World!");
-
+            Logger.Log("Finished.");
             Console.Read();
         }
     }

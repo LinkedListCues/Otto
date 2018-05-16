@@ -14,10 +14,10 @@
 
     public static class Config
     {
-        public static CanvasJsonFetcher Fetcher;
+        public static CanvasFetcher Fetcher;
 
         public static void Initialize () {
-            Fetcher = new CanvasJsonFetcher();
+            Fetcher = new CanvasFetcher();
         }
     }
 }
