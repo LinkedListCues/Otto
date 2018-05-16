@@ -24,24 +24,19 @@ namespace AutoGrader
             Submissions = Serializer.ReadObjectFromPath<List<Submission>>(INFO_PATH);
         }
 
-        // todo make sure to get all 200 (only doing 99 atm)
         private void FetchAndSaveRoster () {
             Logger.Log("Downloading all submissions...");
             Submissions = new List<Submission>();
 
             JArray json;
-            for (int i = 1; i < 99; i++) { // TODO this is a magic constant and needs to be adjusted
-                json = AutoGrader.Fetcher.FetchSubmissions(i);
+            for (int i = 1; i < 99; i++) { // TODO this is a magic constant fuck
+                json = AutoGrader.Fetcher.FetchSubmissions(i, out bool full);
 
                 foreach (var child in json.Children<JObject>()) {
                     Submissions.Add(new Submission(child));
                 }
-
-                // we're getting 99 submissions per page, so if we have fewer, it's time to bail
-                if (json.Count < 99) { break; } // todo this is a slightly different magic constant
-
+                if (!full) { break; }
             }
-
 
             Logger.Log("Serializing submissions...");
             Serializer.WriteObjectToPath(Submissions, INFO_PATH);
