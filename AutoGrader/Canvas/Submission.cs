@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace AutoGrader
+namespace AutoGrader.Canvas
 {
     public class Submission
     {
@@ -26,6 +26,10 @@ namespace AutoGrader
             int hourslate = secondslate / 3600;
             if (hourslate < 50) { return 0f; }
             return hourslate < 220 ? 0.3f : 1f;
+        }
+
+        public void DownloadSubmissionFiles () {
+            Logger.Log("Downloading files for " + SubmissionID);
         }
     }
 }

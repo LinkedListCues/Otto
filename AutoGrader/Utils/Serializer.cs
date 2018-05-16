@@ -8,6 +8,7 @@ namespace AutoGrader
     public static class Serializer
     {
         private const string BASE_PATH = "214AutoGrader";
+        private const string SUBMISSION_PATH = "Submissions";
 
         private static string GetPathName (string path) {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -23,7 +24,6 @@ namespace AutoGrader
             string serialized = JsonConvert.SerializeObject(payload);
             string fullpath = GetPathName(path);
             File.WriteAllText(fullpath, serialized);
-
         }
 
         public static T ReadObjectFromPath<T> (string path) {

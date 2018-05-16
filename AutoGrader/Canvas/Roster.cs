@@ -31,7 +31,7 @@ namespace AutoGrader
 
             JArray json;
             for (int i = 1; i < 99; i++) { // TODO this is a magic constant and needs to be adjusted
-                json = Config.Fetcher.FetchSubmissions(i);
+                json = AutoGrader.Fetcher.FetchSubmissions(i);
 
                 foreach (var child in json.Children<JObject>()) {
                     Submissions.Add(new Submission(child));
@@ -39,7 +39,7 @@ namespace AutoGrader
 
                 // we're getting 99 submissions per page, so if we have fewer, it's time to bail
                 if (json.Count < 99) { break; } // todo this is a slightly different magic constant
-                
+
             }
 
 

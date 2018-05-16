@@ -2,22 +2,16 @@
 {
     public class AutoGrader : IManager
     {
+        public static CanvasFetcher Fetcher;
+
         private Roster _roster;
 
+
         public void Initialize () {
-            Config.Initialize();
+            Fetcher = new CanvasFetcher();
 
             _roster = new Roster();
             _roster.Initialize();
-        }
-    }
-
-    public static class Config
-    {
-        public static CanvasFetcher Fetcher;
-
-        public static void Initialize () {
-            Fetcher = new CanvasFetcher();
         }
     }
 }
