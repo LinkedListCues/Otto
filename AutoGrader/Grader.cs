@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using AutoGrader.Canvas;
+using AutoGrader.Utils;
 
 namespace AutoGrader
 {
@@ -68,8 +69,7 @@ namespace AutoGrader
             string error = errorstream.ReadToEnd();
 
             float grade = MathF.Truncate(1000f * correct / TOTAL_TESTS) / 10f;
-            submission.GiveGrade(grade, correct, incorrect);
-            submission.GiveFeedback(output, error);
+            submission.GiveFeedback(grade, correct, incorrect, output, error);
         }
 
         // todo explain stackoverflow exception
