@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Xml.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,10 +16,9 @@ namespace AutoGrader.Canvas
         [JsonProperty("AttachmentURL")] public readonly string AttachmentURL;
 
         [JsonProperty("Submitted")] public readonly bool Submitted;
+        public bool Valid = true;
 
         public string ResultPath { get; private set; }
-
-        private bool _valid = true;
 
         public Submission () { }
 
@@ -103,13 +103,28 @@ namespace AutoGrader.Canvas
             catch (IOException) { }
         }
 
+        //
+        // public API
 
-        private void Invalidate (string reason) {
-            if (_valid) {
+        public void Invalidate (string reason) {
+            if (Valid) {
 
             }
-            _valid = false;
+            Valid = false;
             Logger.Log($"{SubmissionID} invalid: {reason}");
+        }
+
+        public void GiveGrade (float grade, int correct, int incorrect) {
+            if (grade < 0f || grade > 100.0f) { throw new Exception($"Grade {grade} unreasonable."); }
+
+            int unknown = Grader.TOTAL_TESTS - (correct + incorrect);
+            Logger.Log($"{SubmissionID} grade : {grade}, {correct} correct, {incorrect} incorrect, {unknown} ambiguous.");
+        }
+
+        public void GiveFeedback (string general, string error) {
+            Logger.Log($"{SubmissionID}");
+            Logger.Log(general);
+            Logger.Log(error);
         }
     }
 }

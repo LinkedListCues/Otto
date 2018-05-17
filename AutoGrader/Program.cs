@@ -7,8 +7,8 @@ namespace AutoGrader
         private static void Main (string[] args) {
             var grader = new AutoGrader();
             grader.Initialize();
-            grader.DownloadSubmissions();
-            //grader.GradeSubmissions();
+            grader.PrepareSubmissions();
+            grader.GradeSubmissions();
 
             Logger.Log("Finished.");
             Console.Read();

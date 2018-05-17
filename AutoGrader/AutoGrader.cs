@@ -6,7 +6,6 @@
         public static Builder Builder;
 
         private Roster _roster;
-        private Grader _grader;
 
         public void Initialize () {
             Serializer.InitializeDirectories();
@@ -15,20 +14,21 @@
             Builder = new Builder();
 
             _roster = new Roster();
-            _grader = new Grader();
         }
 
-        public void DownloadSubmissions () {
-            Logger.Log("Downloading all submissions...");
+        public void PrepareSubmissions () {
+            Logger.Log("Preparing submissions...");
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 _roster.Submissions[i].PrepareSubmissionFiles(i + 1, c);
+                break;
             }
         }
 
         public void GradeSubmissions () {
             Logger.Log("Grading all submissions...");
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
-                _grader.Grade(_roster.Submissions[i], i + 1, c);
+                Grader.Grade(_roster.Submissions[i], i + 1, c);
+                break;
             }
         }
     }
