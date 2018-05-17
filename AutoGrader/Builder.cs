@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using AutoGrader.Canvas;
+using AutoGrader.Utils;
 
 namespace AutoGrader
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using AutoGrader.Canvas;
 using Newtonsoft.Json;
 
-namespace AutoGrader
+namespace AutoGrader.Utils
 {
     public static class Serializer
     {
@@ -15,7 +15,7 @@ namespace AutoGrader
 
         private static string GetPathName (params string[] paths) {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string[] args = new[] { datapath, BASE_PATH }.Concat(paths).ToArray(); // todo this seems nasty
+            var args = new[] { datapath, BASE_PATH }.Concat(paths).ToArray();
             return Path.Combine(args);
         }
 

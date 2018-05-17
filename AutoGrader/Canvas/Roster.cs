@@ -1,8 +1,8 @@
-﻿using AutoGrader.Canvas;
+﻿using System.Collections.Generic;
+using AutoGrader.Utils;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
-namespace AutoGrader
+namespace AutoGrader.Canvas
 {
     public class Roster
     {
@@ -28,13 +28,9 @@ namespace AutoGrader
             Logger.Log("Downloading all submissions...");
             Submissions = new List<Submission>();
 
-            JArray json;
             for (int i = 1; i < 99; i++) { // TODO this is a magic constant fuck
-                json = AutoGrader.Fetcher.FetchSubmissions(i, out bool full);
-
-                foreach (var child in json.Children<JObject>()) {
-                    Submissions.Add(new Submission(child));
-                }
+                var json = AutoGrader.Fetcher.FetchSubmissions(i, out bool full);
+                foreach (var child in json.Children<JObject>()) { Submissions.Add(new Submission(child)); }
                 if (!full) { break; }
             }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AutoGrader
+namespace AutoGrader.Utils
 {
     public static class Logger
     {
