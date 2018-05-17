@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Net;
+using AutoGrader.Utils;
 using Newtonsoft.Json.Linq;
 
-namespace AutoGrader
+namespace AutoGrader.Canvas
 {
     public class CanvasFetcher
     {
+        private const string AUTHORIZATION = "Authorization", BEARER = "Bearer";
         private const int PER_PAGE = 99;
-        private readonly Uri BASE_URI;
-        private static string ARGUMENTS;
+        private readonly Uri _baseURI;
+        private static string _authKey, _arguments;
 
         public CanvasFetcher () {
-            string assignment = "460601";
-            BASE_URI = new Uri($"https://canvas.northwestern.edu/api/v1/courses/72859/assignments/{assignment}/submissions");
-            var secret = Serializer.GetAPIKey();
-            ARGUMENTS = $"?access_token={secret}&per_page={PER_PAGE}";
+            const string assignment = "460601";
+
+            _baseURI = new Uri($"https://canvas.northwestern.edu/api/v1/courses/72859/assignments/{assignment}/submissions");
+            _authKey = $"{BEARER} {Serializer.GetAPIKey()}";
+            _arguments = $"?per_page={PER_PAGE}";
         }
 
         // todo error catching
         private static JArray LoadJsonArrayFromURL (Uri uri) {
             using (var webClient = new WebClient()) {
+                webClient.Headers.Add(AUTHORIZATION, _authKey);
                 string json = webClient.DownloadString(uri);
                 return JArray.Parse(json);
             }
         }
 
-        // todo error catching
-        private static JObject LoadJsonFromURL (string url) {
-            using (var webClient = new WebClient()) {
-                string json = webClient.DownloadString(url);
-                return JObject.Parse(json);
-            }
-        }
-
         private Uri MakeURI (string uri) {
-            return new Uri(BASE_URI, uri);
+            return new Uri(_baseURI, uri);
         }
 
         //
@@ -43,7 +39,7 @@ namespace AutoGrader
         public JArray FetchSubmissions (int page, out bool full) {
             Logger.Log("Fetching page " + page);
 
-            var result = LoadJsonArrayFromURL(MakeURI(ARGUMENTS + "&page=" + page));
+            var result = LoadJsonArrayFromURL(MakeURI(_arguments + "&page=" + page));
             full = result.Count >= PER_PAGE;
             return result;
         }
