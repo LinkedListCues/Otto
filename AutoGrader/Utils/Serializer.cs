@@ -51,8 +51,8 @@ namespace AutoGrader
             return result;
         }
 
-        public static string GetSubmissionFileName (Submission submission) {
-            return GetPathName(SUBMISSION_PATH, Path.ChangeExtension(submission.SubmissionID, ".zip"));
+        public static string GetSubmissionDirectory (Submission submission) {
+            return GetPathName(SUBMISSION_PATH, submission.SubmissionID);
         }
     }
 }

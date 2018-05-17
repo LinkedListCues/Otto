@@ -45,8 +45,8 @@ namespace AutoGrader.Canvas
                 return;
             }
 
-            string path = Serializer.GetSubmissionFileName(this);
-            string dir = Path.ChangeExtension(path, "");
+            string dir = Serializer.GetSubmissionDirectory(this);
+            string path = Path.ChangeExtension(dir, ".zip");
             ResultPath = Path.ChangeExtension(path, ".exe"); //todo parameter
 
             Logger.Log($"{SubmissionID} \t({index} of {count})");
@@ -74,6 +74,9 @@ namespace AutoGrader.Canvas
         }
 
         private void BuildAndCopyResult (string directory) {
+            var directories = Directory.GetDirectories(directory, "_*");
+            foreach (string dir in directories) { Directory.Delete(dir, true); }
+
             var solutions = Directory.GetFiles(directory, "*.sln", SearchOption.AllDirectories);
             if (solutions.Length == 0) {
                 Invalidate("No .sln file found.");
@@ -94,7 +97,10 @@ namespace AutoGrader.Canvas
             var exes = Directory.GetFiles(directory, "*.exe", SearchOption.AllDirectories);
             Logger.Log($"Wrote exe to {ResultPath}");
             File.Copy(exes[0], ResultPath);
-            Directory.Delete(directory);
+            try {
+                Directory.Delete(directory, true);
+            }
+            catch (IOException) { }
         }
 
 

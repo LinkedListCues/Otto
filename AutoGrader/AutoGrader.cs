@@ -22,7 +22,6 @@
             Logger.Log("Downloading all submissions...");
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 _roster.Submissions[i].PrepareSubmissionFiles(i + 1, c);
-                break;
             }
         }
 
