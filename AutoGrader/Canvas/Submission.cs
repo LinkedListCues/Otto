@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Net;
 using Newtonsoft.Json;
@@ -14,6 +15,10 @@ namespace AutoGrader.Canvas
         [JsonProperty("AttachmentURL")] public readonly string AttachmentURL;
 
         [JsonProperty("Submitted")] public readonly bool Submitted;
+
+        public string ResultPath { get; private set; }
+
+        private bool _valid = true;
 
         public Submission () { }
 
@@ -36,16 +41,18 @@ namespace AutoGrader.Canvas
 
         public void PrepareSubmissionFiles (int index, int count) {
             if (!Submitted) {
-                Logger.Log($"No submission for {SubmissionID}");
+                Invalidate("Nothing submitted");
                 return;
             }
 
             string path = Serializer.GetSubmissionFileName(this);
             string dir = Path.ChangeExtension(path, "");
+            ResultPath = Path.ChangeExtension(SubmissionID, ".exe"); //todo parameter
 
             Logger.Log($"{SubmissionID} \t({index} of {count})");
-            if (Directory.Exists(dir)) { return; }
-            DownloadAndUnzip(path, dir);
+            if (File.Exists(ResultPath)) { return; }
+            if (!Directory.Exists(dir)) { DownloadAndUnzip(path, dir); }
+            if (Directory.Exists(dir)) { BuildAndCopyResult(dir); } // we may not have succeeded
         }
 
         private void DownloadAndUnzip (string zippath, string directory) {
@@ -62,8 +69,40 @@ namespace AutoGrader.Canvas
                 File.Delete(zippath);
             }
             catch (InvalidDataException) { // the .zip is invalid, presumably
-                Logger.Log($"Invalid .zip for {SubmissionID}");
+                Invalidate("Submission (.zip file) corrupted.");
             }
+        }
+
+        private void BuildAndCopyResult (string directory) {
+            var solutions = Directory.GetFiles(directory, "*.sln", SearchOption.AllDirectories);
+            if (solutions.Length == 0) {
+                Invalidate("No .sln file found.");
+                return;
+            }
+            if (solutions.Length > 1) {
+                Invalidate("Multiple solution files submitted.");
+                return;
+            }
+
+            string target = solutions[0];
+            bool success = AutoGrader.Builder.Build(this, target);
+            if (!success) {
+                Invalidate("Build completed with errors.");
+                return;
+            }
+
+            var exes = Directory.GetFiles(directory, "*.exe", SearchOption.AllDirectories);
+            File.Copy(exes[0], ResultPath);
+            //Directory.Delete(directory);
+        }
+
+
+        private void Invalidate (string reason) {
+            if (_valid) {
+
+            }
+            _valid = false;
+            //Logger.Log($"{SubmissionID} invalid: {reason}");
         }
     }
 }

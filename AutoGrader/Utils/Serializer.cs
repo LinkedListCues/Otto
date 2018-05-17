@@ -11,6 +11,7 @@ namespace AutoGrader
     {
         private const string BASE_PATH = "214AutoGrader";
         private const string SUBMISSION_PATH = "Submissions";
+        private const string TESTBED_PATH = "Testbed";
 
         private static string GetPathName (params string[] paths) {
             string datapath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -23,6 +24,7 @@ namespace AutoGrader
 
         public static void InitializeDirectories () {
             Directory.CreateDirectory(GetPathName(SUBMISSION_PATH));
+            Directory.CreateDirectory(GetPathName(TESTBED_PATH));
         }
 
         public static string GetAPIKey () {

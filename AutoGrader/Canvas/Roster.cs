@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using AutoGrader.Canvas;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using AutoGrader.Canvas;
 
 namespace AutoGrader
 {
-    public class Roster : IManager
+    public class Roster
     {
         private const string INFO_PATH = "submissions.json";
 
         public List<Submission> Submissions { get; private set; }
 
-        public void Initialize () {
+        public Roster () {
             PrepareRoster();
         }
 
