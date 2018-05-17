@@ -10,7 +10,6 @@ namespace AutoGrader
 
         public bool Build (Submission submission, string solutionpath) {
             Logger.Log($"Building {submission.SubmissionID}");
-            Logger.Log(solutionpath);
 
             var startinfo = new ProcessStartInfo {
                 FileName = _msBuildPath,
@@ -24,10 +23,8 @@ namespace AutoGrader
             if (build == null) { return false; }
             string output = build.StandardOutput.ReadToEnd();
             build.WaitForExit();
-            Logger.Log(output);
 
-
-            return false;
+            return output.Contains("0 Error");
         }
     }
 }

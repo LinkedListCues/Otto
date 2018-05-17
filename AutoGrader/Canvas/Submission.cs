@@ -47,7 +47,7 @@ namespace AutoGrader.Canvas
 
             string path = Serializer.GetSubmissionFileName(this);
             string dir = Path.ChangeExtension(path, "");
-            ResultPath = Path.ChangeExtension(SubmissionID, ".exe"); //todo parameter
+            ResultPath = Path.ChangeExtension(path, ".exe"); //todo parameter
 
             Logger.Log($"{SubmissionID} \t({index} of {count})");
             if (File.Exists(ResultPath)) { return; }
@@ -92,8 +92,9 @@ namespace AutoGrader.Canvas
             }
 
             var exes = Directory.GetFiles(directory, "*.exe", SearchOption.AllDirectories);
+            Logger.Log($"Wrote exe to {ResultPath}");
             File.Copy(exes[0], ResultPath);
-            //Directory.Delete(directory);
+            Directory.Delete(directory);
         }
 
 
@@ -102,7 +103,7 @@ namespace AutoGrader.Canvas
 
             }
             _valid = false;
-            //Logger.Log($"{SubmissionID} invalid: {reason}");
+            Logger.Log($"{SubmissionID} invalid: {reason}");
         }
     }
 }
