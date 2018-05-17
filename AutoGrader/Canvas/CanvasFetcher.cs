@@ -13,9 +13,9 @@ namespace AutoGrader.Canvas
         private static string _authKey, _arguments;
 
         public CanvasFetcher () {
-            const string assignment = "460601";
+            const string assignment = "460601"; // todo param
 
-            _baseURI = new Uri($"https://canvas.northwestern.edu/api/v1/courses/72859/assignments/{assignment}/submissions");
+            _baseURI = new Uri($"https://canvas.northwestern.edu/api/v1/courses/72859/assignments/{assignment}/submissions"); // todo param
             _authKey = $"{BEARER} {Serializer.GetAPIKey()}";
             _arguments = $"?per_page={PER_PAGE}";
         }

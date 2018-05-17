@@ -1,4 +1,7 @@
-﻿namespace AutoGrader
+﻿using AutoGrader.Canvas;
+using AutoGrader.Utils;
+
+namespace AutoGrader
 {
     public class AutoGrader
     {
@@ -20,15 +23,15 @@
             Logger.Log("Preparing submissions...");
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 _roster.Submissions[i].PrepareSubmissionFiles(i + 1, c);
-                break;
             }
         }
 
         public void GradeSubmissions () {
             Logger.Log("Grading all submissions...");
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
-                Grader.Grade(_roster.Submissions[i], i + 1, c);
-                break;
+                var sub = _roster.Submissions[i];
+                Grader.Grade(sub, i + 1, c);
+                sub.UploadResults();
             }
         }
     }

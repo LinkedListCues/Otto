@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using AutoGrader.Canvas;
 using AutoGrader.Utils;
@@ -69,7 +70,16 @@ namespace AutoGrader
             string error = errorstream.ReadToEnd();
 
             float grade = MathF.Truncate(1000f * correct / TOTAL_TESTS) / 10f;
-            submission.GiveFeedback(grade, correct, incorrect, output, error);
+            submission.GiveFeedback(grade, correct, incorrect, TrimOutput(output), error);
+        }
+
+        private static string TrimOutput (string output) {
+            var trimmedOutput = new StringBuilder();
+            var lines = output.Split("\n");
+
+            // skip the first five lines, skip the last 4 lines
+            for (int i = 5; i < lines.Length - 4; i++) { trimmedOutput.AppendLine(lines[i]); }
+            return trimmedOutput.ToString();
         }
 
         // todo explain stackoverflow exception
