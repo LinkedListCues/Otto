@@ -5,15 +5,13 @@ using AutoGrader.Utils;
 
 namespace AutoGrader
 {
-    public class Builder
+    public static class Builder
     {
-        private readonly string _msBuildPath = Path.Combine("C:\\\\", "Program Files (x86)", "Microsoft Visual Studio", "2017", "Community", "MSBuild", "15.0", "Bin", "MSBuild.exe");
-
-        public bool Build (Submission submission, string solutionpath) {
+        public static bool Build (Submission submission, string solutionpath) {
             Logger.Log($"Building {submission.SubmissionID}");
 
             var startinfo = new ProcessStartInfo {
-                FileName = _msBuildPath,
+                FileName = AutoGrader.Config.MSBuildPath,
                 // n.b. the quotes are here because Ian has a love of spaces in directory names
                 Arguments = "/nologo \"" + solutionpath + "\"",
                 RedirectStandardError = true,

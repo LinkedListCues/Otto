@@ -10,9 +10,7 @@ namespace AutoGrader.Canvas
 
         public List<Submission> Submissions { get; private set; }
 
-        public Roster () {
-            PrepareRoster();
-        }
+        private CanvasFetcher _fetcher = new CanvasFetcher();
 
         public void PrepareRoster () {
             if (Serializer.FileExists(INFO_PATH)) { LoadRoster(); }
@@ -28,8 +26,9 @@ namespace AutoGrader.Canvas
             Logger.Log("Downloading all submissions...");
             Submissions = new List<Submission>();
 
-            for (int i = 1; i < 99; i++) { // TODO this is a magic constant fuck
-                var json = AutoGrader.Fetcher.FetchSubmissions(i, out bool full);
+            // Loop "forever."
+            for (int i = 1; ; i++) {
+                var json = _fetcher.FetchSubmissions(i, out bool full);
                 foreach (var child in json.Children<JObject>()) { Submissions.Add(new Submission(child)); }
                 if (!full) { break; }
             }

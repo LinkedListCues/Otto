@@ -27,11 +27,6 @@ namespace AutoGrader.Utils
             Directory.CreateDirectory(GetPathName(TESTBED_PATH));
         }
 
-        public static string GetAPIKey () {
-            string path = GetPathName(".secret");
-            return File.ReadAllText(path);
-        }
-
         public static bool FileExists (string path) { return File.Exists(GetPathName(path)); }
 
         public static void WriteObjectToPath (object payload, string path) {

@@ -8,16 +8,12 @@ namespace AutoGrader.Canvas
     public class CanvasFetcher
     {
         private const string AUTHORIZATION = "Authorization", BEARER = "Bearer";
-        private const int PER_PAGE = 99;
         private readonly Uri _baseURI;
-        private static string _authKey, _arguments;
+        private static string _authKey;
 
         public CanvasFetcher () {
-            const string assignment = "460601"; // todo param
-
-            _baseURI = new Uri($"https://canvas.northwestern.edu/api/v1/courses/72859/assignments/{assignment}/submissions"); // todo param
-            _authKey = $"{BEARER} {Serializer.GetAPIKey()}";
-            _arguments = $"?per_page={PER_PAGE}";
+            _baseURI = AutoGrader.Config.GetSubmissionsURL();
+            _authKey = $"{BEARER} {AutoGrader.Config.APIKey}";
         }
 
         // todo error catching
@@ -29,18 +25,14 @@ namespace AutoGrader.Canvas
             }
         }
 
-        private Uri MakeURI (string uri) {
-            return new Uri(_baseURI, uri);
-        }
-
         //
         // public API
 
         public JArray FetchSubmissions (int page, out bool full) {
             Logger.Log("Fetching page " + page);
 
-            var result = LoadJsonArrayFromURL(MakeURI(_arguments + "&page=" + page));
-            full = result.Count >= PER_PAGE;
+            var result = LoadJsonArrayFromURL(new Uri(_baseURI + "&page=" + page));
+            full = result.Count >= Configuration.PER_PAGE;
             return result;
         }
     }
