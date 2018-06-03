@@ -1,0 +1,16 @@
+{
+  "base_url": "https://canvas.northwestern.edu/api/v1/courses",
+  "secret_file": "C:\\Users\\Ethan\\AppData\\Roaming\\214AutoGrader\\.secret",
+
+  "course_id": "72859",
+  "assignment_id": "463053",
+  "total_tests": 20,
+
+  "testbed_exe_path": "C:\\users\\ethan\\appdata\\roaming\\214autograder\\testbed\\hashtabletests\\bin\\debug\\netcoreapp2.0\\HappyFunBlobZero.exe",
+  "testbed_adapter_path": "C:\\users\\ethan\\appdata\\roaming\\214autograder\\testbed\\packages\\MSTest.TestAdapter.1.2.1",
+  "testbed_dll_path": "C:\\Users\\Ethan\\AppData\\Roaming\\214AutoGrader\\Testbed\\hashtabletests\\bin\\debug\\netcoreapp2.0\\hashtabletests.dll",
+
+  "msbuild_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe",
+  "vstest_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe",
+  "dll_path": "C:\\Users\\Ethan\\AppData\\Roaming\\214AutoGrader\\Testbed\\Tests\\bin\\Debug\\Tests.dll"
+}
