@@ -14,9 +14,7 @@ namespace AutoGrader
             _roster = new Roster();
         }
 
-        public void PrepareRoster () {
-            _roster.PrepareRoster();
-        }
+        public void PrepareRoster () { _roster.PrepareRoster(); }
 
         public void PrepareSubmissions () {
             Logger.Log("Preparing submissions...");
