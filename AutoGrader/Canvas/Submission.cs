@@ -16,8 +16,8 @@ namespace AutoGrader.Canvas
         [JsonProperty("AttachmentURL")] public readonly string AttachmentURL;
 
         [JsonProperty("Submitted")] public readonly bool Submitted;
-        public bool Valid = true;
 
+        public bool Valid = true;
         public string ResultPath { get; private set; }
 
         private Feedback _feedback;
@@ -35,26 +35,9 @@ namespace AutoGrader.Canvas
 
         private static float CalculateLatePenalty (int secondslate) {
             if (secondslate == 0) { return 0f; }
-
             int hourslate = secondslate / 3600;
             if (hourslate < 50) { return 0f; }
             return hourslate < 220 ? 0.3f : 1f;
-        }
-
-        public void PrepareSubmissionFiles (int index, int count) {
-            if (!Submitted) {
-                Invalidate("Nothing submitted.");
-                return;
-            }
-
-            string dir = Serializer.GetSubmissionDirectory(this);
-            string path = Path.ChangeExtension(dir, ".zip");
-            ResultPath = Path.ChangeExtension(path, ".exe"); //todo parameter
-
-            Logger.Log($"{SubmissionID} \t({index} of {count})");
-            if (File.Exists(ResultPath)) { return; }
-            if (!Directory.Exists(dir)) { DownloadAndUnzip(path, dir); }
-            if (Directory.Exists(dir)) { BuildAndCopyResult(dir); } // we may not have succeeded
         }
 
         private void DownloadAndUnzip (string zippath, string directory) {
@@ -70,9 +53,17 @@ namespace AutoGrader.Canvas
                 ZipFile.ExtractToDirectory(zippath, directory);
                 File.Delete(zippath);
             }
-            catch (InvalidDataException) { // the .zip is invalid, presumably
-                Invalidate("Submission (.zip file) corrupted.");
-            }
+            // The .zip is invalid, presumably.
+            catch (InvalidDataException) { Invalidate("Submission (.zip file) corrupted."); }
+
+            CleanUpMacDirectory(directory);
+        }
+
+        private static void CleanUpMacDirectory (string directory) {
+            string osx = Path.Combine(directory, "_MACOSX");
+            if (!Directory.Exists(osx)) { return; }
+            Logger.Log($"Removing mac directory: {osx}");
+            Directory.Delete(osx, true);
         }
 
         private void BuildAndCopyResult (string directory) {
@@ -90,7 +81,7 @@ namespace AutoGrader.Canvas
             }
 
             string target = solutions[0];
-            bool success = AutoGrader.Builder.Build(this, target);
+            bool success = Builder.Build(this, target);
             if (!success) {
                 Invalidate("Build completed with errors.");
                 return;
@@ -102,11 +93,28 @@ namespace AutoGrader.Canvas
             try {
                 Directory.Delete(directory, true);
             }
-            catch (IOException) { }
+            catch (IOException) {
+                // todo wtf are you doing
+            }
         }
 
         //
         // public API
+
+        public void PrepareSubmissionFiles (int index, int count) {
+            if (!Submitted) {
+                Invalidate("Nothing submitted.");
+                return;
+            }
+
+            string dir = Serializer.GetSubmissionDirectory(this);
+            string path = Path.ChangeExtension(dir, ".zip");
+            ResultPath = Path.ChangeExtension(path, ".exe"); //todo parameter
+
+            if (File.Exists(ResultPath)) { return; }
+            if (!Directory.Exists(dir)) { DownloadAndUnzip(path, dir); }
+            if (Directory.Exists(dir)) { BuildAndCopyResult(dir); } // we may not have succeeded
+        }
 
         public void Invalidate (string reason) {
             if (!Valid) { throw new Exception("double invalidation?"); }
@@ -117,10 +125,11 @@ namespace AutoGrader.Canvas
         }
 
         // todo yikes.gov
-        public void GiveFeedback (float grade, int correct, int incorrect, string general, string error) {
+        public void GiveFeedback (int correct, int incorrect, string general) {
+            float grade = MathF.Truncate(1000f * correct / AutoGrader.Config.TotalTests) / 10f;
             if (grade < 0f || grade > 100.0f) { throw new Exception($"Grade {grade} unreasonable."); }
 
-            int unknown = Grader.TOTAL_TESTS - (correct + incorrect);
+            int unknown = AutoGrader.Config.TotalTests - (correct + incorrect);
             float finalgrade = (1 - LatePenalty) * grade;
 
             Logger.Log($"{SubmissionID} grade : {finalgrade}, {correct} correct, {incorrect} incorrect, {unknown} ambiguous.");
@@ -131,50 +140,29 @@ namespace AutoGrader.Canvas
                 Incorrect = incorrect,
                 Ambigious = unknown,
                 GeneralOutput = general,
-                ErrorOutput = error
             };
         }
 
         public void UploadResults () {
             Logger.Log($"Uploading results for {SubmissionID}");
-
             try {
-                string uri = MakeMagicUploadURI();
+                var uri = AutoGrader.Config.GetUploadURL(this, _feedback, out string headername, out string headervalue);
                 using (var client = new WebClient()) {
-                    client.Headers.Add("Authorization", "Bearer 1876~nSmP6pGTi0LsIdPe8h19TLVL9zAP5tHTgvfMd08cjLZAdarU0HF5KQSyss8JGcdp");
+                    client.Headers.Add(headername, headervalue);
                     client.UploadString(uri, "PUT", "");
                 }
             }
             catch (Exception) {
                 // ignored
+                // todo bad bad
             }
         }
 
-        private string MakeMagicUploadURI () {
-            const string baseuri = "https://canvas.northwestern.edu/api/v1/courses/72859/assignments/460601/submissions/";
-            return $"{baseuri}{UserID}?submission[posted_grade]={_feedback.Grade}"
-            + $"&comment[text_comment]={ConstructFeedbackString()}";
-        }
-
-        private string ConstructFeedbackString () {
-            if (!Valid) { return $"Grade: {_feedback.Grade} due to {_feedback.InvalidReason}"; }
-
-            string latepenalty = LatePenalty > 0f ? $"Late penalty: {LatePenalty}\n\n" : "";
-            string information =
-                $"Grade : {_feedback.Grade}\n{_feedback.Correct} correct\n{_feedback.Incorrect} incorrect\n {_feedback.Ambigious} ambiguous\n";
-
-            string generaloutput = _feedback.GeneralOutput + "\n";
-            string erroroutput = _feedback.ErrorOutput + "\n";
-
-            string result = latepenalty + information + generaloutput + erroroutput;
-            return result.Trim();
-        }
-
-        private struct Feedback
+        public struct Feedback
         {
             public float Grade;
             public int Correct, Incorrect, Ambigious;
-            public string GeneralOutput, ErrorOutput, InvalidReason;
+            public string GeneralOutput, InvalidReason;
         }
     }
 }
