@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using AutoGrader.Canvas;
 using AutoGrader.Utils;
 
@@ -13,7 +12,11 @@ namespace AutoGrader
             var startinfo = new ProcessStartInfo {
                 FileName = AutoGrader.Config.MSBuildPath,
                 // n.b. the quotes are here because Ian has a love of spaces in directory names
-                Arguments = "/nologo \"" + solutionpath + "\"",
+                // N.B.: /t:restore says, "please reinstall the missing NUGet packages."
+                // Should this be necessary? No, but fuck you.
+
+                // todo maybe rebuild?
+                Arguments = "/nologo /t:restore /t:rebuild \"" + solutionpath + "\"",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true
             };
