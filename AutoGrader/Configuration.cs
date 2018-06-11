@@ -15,6 +15,8 @@ namespace AutoGrader
         public readonly string MSBuildPath, VSTestPath;
 
         public readonly string CourseID, AssignmentID, TestExecutablePath, TestbedAdapterPath, TestbedDLLPath;
+        public readonly bool Exe;
+
         public readonly int TotalTests;
 
         public Configuration (string path) {
@@ -29,9 +31,12 @@ namespace AutoGrader
             CourseID = (string)json["course_id"];
             AssignmentID = (string)json["assignment_id"];
 
+
+            string adapter = (string)json["testbed_adapter_path"];
+            if (adapter.Length > 0) { TestbedAdapterPath = adapter; }
             TestExecutablePath = (string)json["testbed_exe_path"];
-            TestbedAdapterPath = (string)json["testbed_adapter_path"];
             TestbedDLLPath = (string)json["testbed_dll_path"];
+            Exe = (bool)json["exe"];
 
             MSBuildPath = (string)json["msbuild_path"];
             VSTestPath = (string)json["vstest_path"];
@@ -70,7 +75,7 @@ namespace AutoGrader
 
             string url = $"{BaseURL}/{CourseID}/assignments/{AssignmentID}/submissions/{sub.UserID}"
                          + $"?submission[posted_grade]={feedback.Grade}"
-                         + $"&comment[text_comment]={ConstructFeedbackString(sub, feedback)}";
+            + $"&comment[text_comment]={ConstructFeedbackString(sub, feedback)}";
             return new Uri(url);
         }
 

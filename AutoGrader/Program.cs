@@ -5,7 +5,7 @@ namespace AutoGrader
 {
     internal class Program
     {
-        private static void Main (string[] args) {
+        private static void Main () {
             Serializer.InitializeDirectories();
 
             var cfg = new Configuration("config.json");
@@ -15,7 +15,10 @@ namespace AutoGrader
             grader.PrepareSubmissions();
             grader.GradeSubmissions();
 
-            // todo take input before uploading
+            Evaluater.PrintGradeCounts();
+
+            Logger.Log("Time to upload doot doot motherfucker.");
+            Console.Read();
             grader.UploadSubmissions();
 
             Logger.Log("Finished.");

@@ -87,8 +87,13 @@ namespace AutoGrader.Canvas
                 return;
             }
 
-            var exes = Directory.GetFiles(directory, "*.exe", SearchOption.AllDirectories);
-            Logger.Log($"Wrote exe to {ResultPath}");
+            var exes = Directory.GetFiles(directory, AutoGrader.Config.Exe ? "*.exe" : "*.dll", SearchOption.AllDirectories);
+            if (exes.Length < 1) {
+                Invalidate("Produced wrong kind of output on build:" +
+                           $"{(AutoGrader.Config.Exe ? ".dll" : ".exe")}");
+                return;
+            }
+            Logger.Log($"Wrote result to {ResultPath}");
             File.Copy(exes[0], ResultPath);
             try {
                 Directory.Delete(directory, true);
@@ -109,7 +114,7 @@ namespace AutoGrader.Canvas
 
             string dir = Serializer.GetSubmissionDirectory(this);
             string path = Path.ChangeExtension(dir, ".zip");
-            ResultPath = Path.ChangeExtension(path, ".exe"); //todo parameter
+            ResultPath = Path.ChangeExtension(path, AutoGrader.Config.Exe ? ".exe" : ".dll");
 
             if (File.Exists(ResultPath)) { return; }
             if (!Directory.Exists(dir)) { DownloadAndUnzip(path, dir); }
