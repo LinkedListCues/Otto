@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using AutoGrader.Canvas;
@@ -10,9 +12,19 @@ namespace AutoGrader
 {
     public static class Evaluater
     {
+        private static readonly Dictionary<float, int> GradeCounts =
+            new Dictionary<float, int>();
+
+        public static void PrintGradeCounts () {
+            foreach (var gradeCount in GradeCounts.OrderByDescending(x => x.Key)) {
+                Logger.Log($"{gradeCount.Key}:\t{gradeCount.Value}");
+            }
+        }
+
         public static void Grade (Submission submission) {
             if (!submission.Submitted || !submission.Valid) {
                 Logger.Log("Skipping invalid submission");
+                IncrementGradeCount(0f);
                 return;
             }
 
@@ -37,9 +49,13 @@ namespace AutoGrader
                 return;
             }
 
+            string arguments = "/inisolation "
+                            + (AutoGrader.Config.TestbedAdapterPath ?? " ")
+                            + $" {AutoGrader.Config.TestbedDLLPath}";
+
             var startinfo = new ProcessStartInfo {
                 FileName = AutoGrader.Config.VSTestPath,
-                Arguments = "/inisolation /testadapterpath:" + AutoGrader.Config.TestbedAdapterPath + " " + AutoGrader.Config.TestbedDLLPath,
+                Arguments = arguments,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
@@ -66,7 +82,19 @@ namespace AutoGrader
             }
 
             string trimmed = sb.ToString();
+            float grade = MathF.Truncate(1000f * correct / AutoGrader.Config.TotalTests) / 10f;
+            IncrementGradeCount(grade);
             submission.GiveFeedback(correct, incorrect, trimmed);
+        }
+
+        private static void IncrementGradeCount (float grade) {
+            if (GradeCounts.TryGetValue(grade, out int count)) {
+                GradeCounts.Remove(grade);
+                GradeCounts.Add(grade, count + 1);
+            }
+            else {
+                GradeCounts.Add(grade, 1);
+            }
         }
 
         private static string MakeFeedbackLine (string line, bool correct) {
