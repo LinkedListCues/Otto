@@ -12,12 +12,32 @@ namespace AutoGrader
 {
     public static class Evaluater
     {
+        private const string UNKNOWN_INVALID = "Failed to run unit tests. Reason unclear.";
+
         private static readonly Dictionary<float, int> GradeCounts =
             new Dictionary<float, int>();
+        private static readonly Dictionary<string, int> InvalidCounts =
+            new Dictionary<string, int>();
 
         public static void PrintGradeCounts () {
             foreach (var gradeCount in GradeCounts.OrderByDescending(x => x.Key)) {
                 Logger.Log($"{gradeCount.Key}:\t{gradeCount.Value}");
+            }
+        }
+
+        public static void PrintInvalidCounts () {
+            foreach (var invalidCount in InvalidCounts.OrderByDescending(x => x.Value)) {
+                Logger.Log($"{invalidCount.Key}:\t{invalidCount.Value}");
+            }
+        }
+
+        public static void IncrementInvalidCount (string reason) {
+            if (InvalidCounts.TryGetValue(reason, out int count)) {
+                InvalidCounts.Remove(reason);
+                InvalidCounts.Add(reason, count + 1);
+            }
+            else {
+                InvalidCounts.Add(reason, 1);
             }
         }
 
@@ -37,15 +57,17 @@ namespace AutoGrader
                     File.SetAttributes(exe, FileAttributes.Normal);
                     break;
                 }
-                catch (UnauthorizedAccessException) {
+                catch (UnauthorizedAccessException e) {
+                    Logger.Log("Unauthorized: " + e.Message);
                     Thread.Sleep(1000);
                 }
-                catch (IOException) {
+                catch (IOException e) {
+                    Logger.Log("IO: " + e.Message);
                     Thread.Sleep(1000);
                 }
 
                 if (tries-- != 0) { continue; }
-                submission.Invalidate("Failed to run unit tests. Reason unclear.");
+                submission.Invalidate(UNKNOWN_INVALID);
                 return;
             }
 

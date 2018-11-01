@@ -16,6 +16,7 @@ namespace AutoGrader
             grader.GradeSubmissions();
 
             Evaluater.PrintGradeCounts();
+            Evaluater.PrintInvalidCounts();
 
             Logger.Log("Time to upload doot doot motherfucker.");
             Console.Read();

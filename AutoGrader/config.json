@@ -3,15 +3,14 @@
   "secret_file": "C:\\Users\\Ethan\\AppData\\Roaming\\214AutoGrader\\.secret",
 
   "course_id": "72859",
-  "assignment_id": "464407",
-  "total_tests": 14,
+  "assignment_id": "468383",
+  "total_tests": 10,
 
-  "exe": true,
-  "testbed_exe_path": "C:\\users\\ethan\\appdata\\roaming\\214autograder\\testbed\\sortingtests\\bin\\debug\\HappyDiscoParticleBlob.exe",
+  "exe": false,
+  "testbed_exe_path": "C:\\users\\ethan\\appdata\\roaming\\214autograder\\testbed\\dynamichashtests\\bin\\debug\\assignment8.dll",
   "testbed_adapter_path": "",
-  "testbed_dll_path": "C:\\Users\\Ethan\\AppData\\roaming\\214autograder\\testbed\\sortingtests\\bin\\debug\\SortingTests.dll",
+  "testbed_dll_path": "C:\\Users\\Ethan\\AppData\\roaming\\214autograder\\testbed\\dynamichashtests\\bin\\debug\\dynamichashtests.dll",
 
   "msbuild_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\MSBuild\\15.0\\Bin\\MSBuild.exe",
   "vstest_path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\IDE\\CommonExtensions\\Microsoft\\TestWindow\\vstest.console.exe"
-  //"dll_path": "C:\\Users\\Ethan\\AppData\\Roaming\\214AutoGrader\\Testbed\\Tests\\bin\\Debug\\sortingtests.dll"
 }

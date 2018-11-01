@@ -21,7 +21,7 @@ namespace AutoGrader
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 var sub = _roster.Submissions[i];
                 Logger.Log($"Preparing {sub.SubmissionID} ({i + 1} of {c})");
-                sub.PrepareSubmissionFiles(i + 1, c);
+                if (sub.Submitted) sub.PrepareSubmissionFiles(i + 1, c);
             }
         }
 
@@ -30,7 +30,7 @@ namespace AutoGrader
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 var sub = _roster.Submissions[i];
                 Logger.Log($"Grading {sub.SubmissionID} ({i + 1} of {c})");
-                Evaluater.Grade(sub);
+                if (sub.Submitted) Evaluater.Grade(sub);
             }
         }
 
@@ -39,7 +39,7 @@ namespace AutoGrader
             for (int i = 0, c = _roster.Submissions.Count; i < c; i++) {
                 var sub = _roster.Submissions[i];
                 Logger.Log($"Uploading {sub.SubmissionID} ({i + 1} of {c})");
-                sub.UploadResults();
+                if (sub.Submitted) sub.UploadResults();
             }
         }
     }

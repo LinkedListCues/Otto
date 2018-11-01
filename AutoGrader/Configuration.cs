@@ -69,13 +69,15 @@ namespace AutoGrader
         //           + $"&comment[text_comment]={ConstructFeedbackString()}";
         //}
 
-        public Uri GetUploadURL (Submission sub, Submission.Feedback feedback, out string headername, out string headervalue) {
+        public Uri GetUploadURL (Submission sub, Submission.Feedback feedback,
+            out string headername, out string headervalue, bool comments = false) {
             headername = $"{AUTHORIZATION}";
             headervalue = $"{BEARER} {APIKey}";
 
             string url = $"{BaseURL}/{CourseID}/assignments/{AssignmentID}/submissions/{sub.UserID}"
-                         + $"?submission[posted_grade]={feedback.Grade}"
-            + $"&comment[text_comment]={ConstructFeedbackString(sub, feedback)}";
+                         + $"?submission[posted_grade]={feedback.Grade}";
+            if (comments) { url += $"&comment[text_comment]={ConstructFeedbackString(sub, feedback)}"; }
+
             return new Uri(url);
         }
 

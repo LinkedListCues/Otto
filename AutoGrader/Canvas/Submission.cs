@@ -19,6 +19,7 @@ namespace AutoGrader.Canvas
 
         public bool Valid = true;
         public string ResultPath { get; private set; }
+        public string InvalidReason => Valid ? null : _feedback.InvalidReason;
 
         private Feedback _feedback;
 
@@ -123,6 +124,7 @@ namespace AutoGrader.Canvas
 
         public void Invalidate (string reason) {
             if (!Valid) { throw new Exception("double invalidation?"); }
+            Evaluater.IncrementInvalidCount(reason);
 
             _feedback = new Feedback { Grade = 0f, InvalidReason = reason };
             Valid = false;
@@ -151,7 +153,9 @@ namespace AutoGrader.Canvas
         public void UploadResults () {
             Logger.Log($"Uploading results for {SubmissionID}");
             try {
-                var uri = AutoGrader.Config.GetUploadURL(this, _feedback, out string headername, out string headervalue);
+                var uri = AutoGrader.Config.GetUploadURL(this, _feedback,
+                    out string headername, out string headervalue,
+                    true);
                 using (var client = new WebClient()) {
                     client.Headers.Add(headername, headervalue);
                     client.UploadString(uri, "PUT", "");
